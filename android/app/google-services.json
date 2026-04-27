@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "336060801673",
+    "project_id": "music-player-ahmed-2024",
+    "storage_bucket": "music-player-ahmed-2024.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336060801673:android:366c43dd38941443569c58",
+        "android_client_info": {
+          "package_name": "com.example.music_player_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8PWM_SPap_XBC8K489w472hgj9tktq2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
