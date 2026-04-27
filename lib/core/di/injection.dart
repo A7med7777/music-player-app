@@ -1,4 +1,4 @@
-import 'package:audio_service/audio_service.dart';
+import 'package:audio_service/audio_service.dart' hide PlaybackState;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -19,6 +19,7 @@ import 'package:music_player_app/features/library/domain/usecases/get_artists.da
 import 'package:music_player_app/features/library/domain/usecases/get_tracks.dart';
 import 'package:music_player_app/features/library/presentation/viewmodels/library_viewmodel.dart';
 import 'package:music_player_app/features/now_playing/data/repositories/playback_repository_impl.dart';
+import 'package:music_player_app/features/now_playing/data/repositories/web_playback_repository_impl.dart';
 import 'package:music_player_app/features/now_playing/domain/repositories/playback_repository.dart';
 import 'package:music_player_app/features/now_playing/presentation/viewmodels/now_playing_viewmodel.dart';
 import 'package:music_player_app/features/playlists/data/datasources/playlist_datasource.dart';
@@ -74,25 +75,41 @@ Future<void> configureDependencies() async {
 
   String uid() => authDs.currentUid ?? 'anonymous';
 
+  // Sign in anonymously if no user session exists.
+  // Silently falls back to uid='anonymous' if the Auth provider isn't enabled yet.
+  if (authDs.currentUid == null) {
+    try {
+      await authDs.signInAnonymously();
+    } catch (_) {
+      // Anonymous auth not enabled in Firebase Console — app still works
+      // with a local 'anonymous' uid; enable it at console.firebase.google.com
+    }
+  }
+
   final authRepo = AuthRepositoryImpl(authDs);
   sl.registerSingleton<AuthRepository>(authRepo);
 
-  // Audio
-  final handler = await AudioService.init(
-    builder: MusicAudioHandler.new,
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.example.music_player_app.audio',
-      androidNotificationChannelName: 'Music Playback',
-      androidNotificationOngoing: true,
-    ),
-  );
-  sl.registerSingleton<MusicAudioHandler>(handler);
-
-  final controller = PlaybackController(handler);
-  await controller.initialize();
-  sl.registerSingleton<PlaybackController>(controller);
-
-  final playbackRepo = PlaybackRepositoryImpl(controller, db, uid);
+  // Audio — audio_service has limited web support; skip on web
+  late final PlaybackRepository playbackRepo;
+  // ignore: avoid_web_libraries_in_flutter
+  const isWeb = bool.fromEnvironment('dart.library.html');
+  if (!isWeb) {
+    final handler = await AudioService.init(
+      builder: MusicAudioHandler.new,
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'com.example.music_player_app.audio',
+        androidNotificationChannelName: 'Music Playback',
+        androidNotificationOngoing: true,
+      ),
+    );
+    sl.registerSingleton<MusicAudioHandler>(handler);
+    final controller = PlaybackController(handler);
+    await controller.initialize();
+    sl.registerSingleton<PlaybackController>(controller);
+    playbackRepo = PlaybackRepositoryImpl(controller, db, uid);
+  } else {
+    playbackRepo = WebPlaybackRepository(db, uid);
+  }
   sl.registerSingleton<PlaybackRepository>(playbackRepo);
   sl.registerSingleton<NowPlayingViewModel>(NowPlayingViewModel(playbackRepo));
 
