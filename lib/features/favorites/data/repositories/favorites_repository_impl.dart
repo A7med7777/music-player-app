@@ -24,7 +24,7 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
       await _datasource.like(trackId);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
@@ -34,7 +34,7 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
       await _datasource.unlike(trackId);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 }

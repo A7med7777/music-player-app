@@ -31,7 +31,7 @@ class PlaylistDatasource {
       _ref.doc(id).snapshots().map(
         (doc) => doc.exists
             ? PlaylistModel.fromFirestore(
-                doc as DocumentSnapshot<Map<String, dynamic>>,
+                doc,
                 _uid(),
               )
             : null,

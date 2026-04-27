@@ -33,9 +33,9 @@ class LibraryRepositoryImpl implements LibraryRepository {
   Future<Either<Failure, Album>> getAlbum(String albumId) async {
     try {
       // Fetched as part of watchAlbums; direct fetch not wired to remote
-      return Left(const NotFoundFailure());
+      return const Left(NotFoundFailure());
     } catch (_) {
-      return Left(const UnknownFailure());
+      return const Left(UnknownFailure());
     }
   }
 
@@ -47,18 +47,18 @@ class LibraryRepositoryImpl implements LibraryRepository {
       final models = await _remote.getTracksOfAlbum(albumId);
       return Right(models.map((m) => m.toDomain()).toList());
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
   @override
   Future<Either<Failure, Artist>> getArtist(String artistId) async =>
-      Left(const NotFoundFailure());
+      const Left(NotFoundFailure());
 
   @override
   Future<Either<Failure, List<Album>>> getAlbumsOfArtist(
     String artistId,
   ) async {
-    return Right([]);
+    return const Right([]);
   }
 }

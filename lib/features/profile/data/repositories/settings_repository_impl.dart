@@ -29,7 +29,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await _doc.set(data, SetOptions(merge: true));
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 

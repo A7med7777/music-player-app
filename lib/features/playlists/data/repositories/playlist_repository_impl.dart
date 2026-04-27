@@ -19,7 +19,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       _datasource.watchPlaylist(playlistId).map<Either<Failure, Playlist>>(
         (model) => model != null
             ? Right(model.toDomain())
-            : Left(const NotFoundFailure()),
+            : const Left(NotFoundFailure()),
       ).handleError((_) => const Left(NetworkFailure()));
 
   @override
@@ -28,7 +28,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       final model = await _datasource.create(name);
       return Right(model.toDomain());
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
@@ -41,7 +41,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       await _datasource.rename(playlistId, newName);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
@@ -51,7 +51,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       await _datasource.delete(playlistId);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
@@ -64,7 +64,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       await _datasource.addTrack(playlistId, trackId);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
@@ -77,7 +77,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       await _datasource.removeTrack(playlistId, trackId);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 
@@ -91,7 +91,7 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
       await _datasource.reorder(playlistId, from, to);
       return const Right(null);
     } catch (_) {
-      return Left(const NetworkFailure());
+      return const Left(NetworkFailure());
     }
   }
 }

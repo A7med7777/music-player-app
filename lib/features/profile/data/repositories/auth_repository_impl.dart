@@ -23,14 +23,14 @@ class AuthRepositoryImpl implements AuthRepository {
       await _datasource.signInAnonymously();
       return const Right(null);
     } catch (_) {
-      return Left(const PermissionFailure());
+      return const Left(PermissionFailure());
     }
   }
 
   @override
   Future<Either<Failure, void>> signInWithGoogle() async {
     // Google sign-in requires google_sign_in package; placeholder.
-    return Left(const PermissionFailure('Google sign-in not yet configured.'));
+    return const Left(PermissionFailure('Google sign-in not yet configured.'));
   }
 
   @override
@@ -39,7 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _datasource.signOut();
       return const Right(null);
     } catch (_) {
-      return Left(const UnknownFailure());
+      return const Left(UnknownFailure());
     }
   }
 }
