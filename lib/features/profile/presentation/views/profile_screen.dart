@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:music_player_app/core/dev/seed_data.dart';
+import 'package:music_player_app/core/services/spotify_token_service.dart';
 import 'package:music_player_app/core/theme/app_tokens.dart';
 import 'package:music_player_app/features/profile/domain/entities/app_settings.dart';
 import 'package:music_player_app/features/profile/presentation/viewmodels/profile_viewmodel.dart';
@@ -183,6 +187,19 @@ class ProfileScreen extends StatelessWidget {
                   onChanged: settingsVm.setSpotifyEnabled,
                 ),
               ),
+              // Dev-only: seed sample data
+              if (kDebugMode) ...[
+                const Divider(),
+                _SectionTitle('Developer', tokens: tokens),
+                ListTile(
+                  leading: const Icon(Icons.dataset),
+                  title: const Text('Load sample data'),
+                  subtitle: const Text(
+                    'Seeds 10 tracks — add Spotify credentials for real 30s previews',
+                  ),
+                  onTap: () => _showSeedDialog(context),
+                ),
+              ],
               SizedBox(height: tokens.spacing32),
             ],
           );
@@ -278,6 +295,105 @@ class _SummaryChip extends StatelessWidget {
         Text(label, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
+  }
+}
+
+Future<void> _showSeedDialog(BuildContext context) async {
+  final clientIdCtrl = TextEditingController();
+  final secretCtrl = TextEditingController();
+
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Load sample data'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (kIsWeb)
+            const Text(
+              'Running on web — Spotify preview fetching is blocked by browser '
+              'CORS restrictions. Royalty-free fallback audio will be used.\n\n'
+              'Run on Android/iOS/desktop to use real Spotify 30s previews.',
+              style: TextStyle(fontSize: 13),
+            )
+          else ...[
+            const Text(
+              'Enter Spotify credentials to get real 30-second previews.\n'
+              'Leave blank to use royalty-free fallback audio.\n\n'
+              'Get credentials free at developer.spotify.com → create app.',
+              style: TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: clientIdCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Client ID (optional)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: secretCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Client Secret (optional)',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext, false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: const Text('Seed'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirmed != true || !context.mounted) return;
+
+  String? token;
+  if (!kIsWeb) {
+    final clientId = clientIdCtrl.text.trim();
+    final secret = secretCtrl.text.trim();
+
+    if (clientId.isNotEmpty && secret.isNotEmpty) {
+      try {
+        token = await SpotifyTokenService.getClientCredentialsToken(
+          clientId: clientId,
+          clientSecret: secret,
+        );
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Spotify auth failed: $e — using fallback audio')),
+          );
+        }
+      }
+    }
+  }
+
+  try {
+    await seedSampleData(FirebaseFirestore.instance, spotifyToken: token);
+    if (context.mounted) {
+      final msg = token != null
+          ? 'Loaded with real Spotify previews!'
+          : 'Loaded with fallback audio.';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error seeding data: $e')),
+      );
+    }
   }
 }
 

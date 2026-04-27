@@ -22,7 +22,7 @@ class UserProfileModel {
       uid: doc.id,
       displayName: (d['displayName'] as String?) ?? 'Listener',
       avatarUrl: d['avatarUrl'] as String?,
-      createdAt: (d['createdAt'] as Timestamp).toDate(),
+      createdAt: (d['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

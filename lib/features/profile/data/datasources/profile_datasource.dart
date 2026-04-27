@@ -10,9 +10,22 @@ class ProfileDatasource {
   DocumentReference<Map<String, dynamic>> get _userDoc =>
       _db.doc('users/${_uid()}');
 
-  Stream<UserProfileModel> watchProfile() => _userDoc.snapshots().where((s) => s.exists).map(
-    (snap) => UserProfileModel.fromFirestore(snap),
-  );
+  Stream<UserProfileModel> watchProfile() =>
+      _userDoc.snapshots().asyncMap((snap) async {
+        if (!snap.exists) {
+          await _userDoc.set({
+            'displayName': 'Listener',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          return UserProfileModel(
+            uid: _uid(),
+            displayName: 'Listener',
+            avatarUrl: null,
+            createdAt: DateTime.now(),
+          );
+        }
+        return UserProfileModel.fromFirestore(snap);
+      });
 
   Future<void> updateDisplayName(String name) =>
       _userDoc.set({'displayName': name}, SetOptions(merge: true));
