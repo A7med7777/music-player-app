@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:music_player_app/core/di/injection.dart';
+import 'package:music_player_app/features/library/domain/entities/album.dart';
+import 'package:music_player_app/features/library/domain/entities/artist.dart';
+import 'package:music_player_app/features/library/presentation/views/album_detail_screen.dart';
+import 'package:music_player_app/features/library/presentation/views/artist_detail_screen.dart';
+import 'package:music_player_app/features/now_playing/domain/repositories/playback_repository.dart';
+import 'package:music_player_app/features/playlists/domain/repositories/playlist_repository.dart';
+import 'package:music_player_app/features/playlists/domain/usecases/add_track_to_playlist.dart';
+import 'package:music_player_app/features/playlists/domain/usecases/play_playlist.dart';
+import 'package:music_player_app/features/playlists/domain/usecases/remove_track_from_playlist.dart';
+import 'package:music_player_app/features/playlists/domain/usecases/reorder_playlist_tracks.dart';
+import 'package:music_player_app/features/playlists/domain/usecases/watch_playlist.dart';
+import 'package:music_player_app/features/playlists/presentation/viewmodels/playlist_detail_viewmodel.dart';
 import 'package:music_player_app/shared/navigation/app_shell.dart';
 import 'package:music_player_app/features/library/presentation/views/library_screen.dart';
 import 'package:music_player_app/features/now_playing/presentation/views/now_playing_screen.dart';
@@ -17,14 +31,27 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/library',
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, shell) =>
-          AppShell(navigationShell: shell),
+      builder: (context, state, shell) => AppShell(navigationShell: shell),
       branches: [
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: '/library',
               builder: (_, __) => const LibraryScreen(),
+              routes: [
+                GoRoute(
+                  path: 'album/:albumId',
+                  builder: (context, state) => AlbumDetailScreen(
+                    album: state.extra as Album,
+                  ),
+                ),
+                GoRoute(
+                  path: 'artist/:artistId',
+                  builder: (context, state) => ArtistDetailScreen(
+                    artist: state.extra as Artist,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -52,9 +79,24 @@ final GoRouter appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: ':playlistId',
-                  builder: (context, state) => PlaylistDetailScreen(
-                    playlistId: state.pathParameters['playlistId']!,
-                  ),
+                  builder: (context, state) {
+                    final playlistId = state.pathParameters['playlistId']!;
+                    return ChangeNotifierProvider(
+                      create: (_) => PlaylistDetailViewModel(
+                        playlistId: playlistId,
+                        watchPlaylist:
+                            WatchPlaylist(sl<PlaylistRepository>()),
+                        addTrack:
+                            AddTrackToPlaylist(sl<PlaylistRepository>()),
+                        removeTrack:
+                            RemoveTrackFromPlaylist(sl<PlaylistRepository>()),
+                        reorderTracks:
+                            ReorderPlaylistTracks(sl<PlaylistRepository>()),
+                        playPlaylist: PlayPlaylist(sl<PlaybackRepository>()),
+                      ),
+                      child: PlaylistDetailScreen(playlistId: playlistId),
+                    );
+                  },
                 ),
               ],
             ),

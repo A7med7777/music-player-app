@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:music_player_app/core/theme/app_tokens.dart';
 import 'package:music_player_app/features/library/domain/repositories/library_repository.dart';
@@ -132,7 +133,7 @@ class _AlbumsTab extends StatelessWidget {
             return Card(
               clipBehavior: Clip.antiAlias,
               child: InkWell(
-                onTap: () {},
+                onTap: () => context.push('/library/album/${album.id}', extra: album),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -213,7 +214,7 @@ class _ArtistsTab extends StatelessWidget {
                     : null,
               ),
               title: Text(artist.name),
-              onTap: () {},
+              onTap: () => context.push('/library/artist/${artist.id}', extra: artist),
             );
           },
         );
