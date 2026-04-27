@@ -11,29 +11,73 @@ import 'package:music_player_app/firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,);
 
-  // Offline-first Firestore persistence
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-  );
+    // On web, Firestore persistence is managed via IndexedDB automatically;
+    // applying Settings with persistenceEnabled on web can throw on some SDK
+    // versions, so guard it.
+    if (!kIsWeb) {
+      FirebaseFirestore.instance.settings = const Settings(
+        persistenceEnabled: true,
+        cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+      );
+    }
 
-  // Crashlytics — forward Flutter errors in release mode
-  if (!kDebugMode) {
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
+    if (!kDebugMode) {
+      FlutterError.onError =
+          FirebaseCrashlytics.instance.recordFlutterFatalError;
+      PlatformDispatcher.instance.onError = (error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        return true;
+      };
+    }
+
+    await Hive.initFlutter();
+    await Hive.openBox<String>('queue_snapshot');
+
+    await configureDependencies();
+  } catch (e, stack) {
+    // Show the error inside Flutter so it's visible in the browser.
+    runApp(_ErrorApp(message: e.toString(), stack: stack.toString()));
+    return;
   }
 
-  // Hive — queue snapshot box opened before DI so PlaybackController can use it
-  await Hive.initFlutter();
-  await Hive.openBox<String>('queue_snapshot');
-
-  // Sign in anonymously if needed, then wire all dependencies
-  await configureDependencies();
-
   runApp(const MusicPlayerApp());
+}
+
+class _ErrorApp extends StatelessWidget {
+  const _ErrorApp({required this.message, required this.stack});
+  final String message;
+  final String stack;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.red[50],
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Startup error',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,),),
+              const SizedBox(height: 12),
+              SelectableText(message,
+                  style: const TextStyle(fontFamily: 'monospace'),),
+              const SizedBox(height: 12),
+              SelectableText(stack,
+                  style: const TextStyle(
+                      fontFamily: 'monospace', fontSize: 11,),),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
