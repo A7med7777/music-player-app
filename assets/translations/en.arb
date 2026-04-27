@@ -1,0 +1,116 @@
+{
+  "@@locale": "en",
+  "appName": "Music Player",
+  "@appName": { "description": "Application name" },
+
+  "navLibrary": "Library",
+  "navSearch": "Search",
+  "navFavorites": "Favorites",
+  "navPlaylists": "Playlists",
+  "navProfile": "Profile",
+
+  "libraryTabSongs": "Songs",
+  "libraryTabAlbums": "Albums",
+  "libraryTabArtists": "Artists",
+  "libraryEmpty": "No music found. Add audio files to get started.",
+
+  "nowPlayingTitle": "Now Playing",
+  "nowPlayingQueue": "Queue",
+  "nowPlayingNoTrack": "Nothing playing",
+
+  "searchHint": "Search songs, albums, artists…",
+  "searchSectionSongs": "Songs",
+  "searchSectionAlbums": "Albums",
+  "searchSectionArtists": "Artists",
+  "searchSectionPlaylists": "Playlists",
+  "searchEmpty": "No results for \"{query}\"",
+  "@searchEmpty": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "searchRecentTitle": "Recent Searches",
+  "searchClearRecent": "Clear",
+
+  "favoritesTitle": "Favorites",
+  "favoritesEmpty": "You haven't liked any tracks yet.",
+  "favoritesPlayAll": "Play All",
+  "favoritesShuffle": "Shuffle",
+
+  "playlistsTitle": "Playlists",
+  "playlistsEmpty": "No playlists yet. Create one to get started.",
+  "playlistsCreate": "New Playlist",
+  "playlistsCreateHint": "Playlist name",
+  "playlistsRename": "Rename",
+  "playlistsDelete": "Delete",
+  "playlistsDeleteConfirm": "Delete \"{name}\"?",
+  "@playlistsDeleteConfirm": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "playlistsAddTrack": "Add to Playlist",
+  "playlistsNewPlaylist": "New Playlist",
+  "playlistsPlay": "Play",
+  "playlistsShuffle": "Shuffle",
+  "playlistsTrackCount": "{count, plural, =1{1 song} other{{count} songs}}",
+  "@playlistsTrackCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "profileTitle": "Profile",
+  "profileDisplayName": "Display Name",
+  "profileTotalTracks": "{count} tracks",
+  "@profileTotalTracks": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "profileTotalLiked": "{count} liked",
+  "@profileTotalLiked": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "profileTotalPlaylists": "{count} playlists",
+  "@profileTotalPlaylists": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "settingsTitle": "Settings",
+  "settingsTheme": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsAudioQuality": "Audio Quality",
+  "settingsAudioQualityAuto": "Auto",
+  "settingsAudioQualityLow": "Low",
+  "settingsAudioQualityNormal": "Normal",
+  "settingsAudioQualityHigh": "High",
+  "settingsCrossfade": "Crossfade",
+  "settingsCrossfadeOff": "Off",
+  "settingsEqualizer": "Equalizer Preset",
+  "settingsShowExplicit": "Show Explicit Content",
+  "settingsSpotify": "Spotify",
+  "settingsSpotifyConnect": "Connect to Spotify",
+  "settingsSpotifyConnected": "Connected",
+  "settingsSpotifyDisconnect": "Disconnect",
+
+  "actionPlay": "Play",
+  "actionPause": "Pause",
+  "actionSkipNext": "Skip Next",
+  "actionSkipPrevious": "Skip Previous",
+  "actionShuffle": "Shuffle",
+  "actionRepeat": "Repeat",
+  "actionLike": "Like",
+  "actionUnlike": "Unlike",
+  "actionAddToPlaylist": "Add to Playlist",
+  "actionRemove": "Remove",
+  "actionCancel": "Cancel",
+  "actionConfirm": "Confirm",
+  "actionSave": "Save",
+
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorNetwork": "No internet connection.",
+  "errorNotFound": "Not found.",
+  "errorPlayback": "Playback error. Skipping to next track.",
+  "errorTrackUnavailable": "Track unavailable offline.",
+
+  "offlineBanner": "You're offline. Some features may be unavailable.",
+  "loadingLabel": "Loading…",
+
+  "spotifyBadge": "Spotify",
+  "spotifyOffline": "Spotify unavailable offline"
+}

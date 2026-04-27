@@ -1,0 +1,18 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    missing_required_param: error
+    missing_return: error
+  exclude:
+    - lib/core/l10n/**
+    - lib/firebase_options.dart
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    always_use_package_imports: true
+    use_super_parameters: true
+    prefer_single_quotes: true
+    require_trailing_commas: true

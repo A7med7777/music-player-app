@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Catalog: documents live at /catalog/{category}/items/{docId}
+    // allow write:true temporarily for seeding — change back to false after loading sample data
+    match /catalog/{category}/items/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Per-user data — only the owner can read/write
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /settings/app {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+      match /likes/{trackId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+      match /playlists/{playlistId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+      match /playlists/{playlistId}/tracks/{trackId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+      match /searchHistory/{queryId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}
