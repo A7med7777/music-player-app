@@ -19,8 +19,8 @@ class FavoritesDatasource {
           for (final doc in snap.docs) {
             try {
               final trackDoc = await _db
-                  .doc('catalog/tracks/${doc.id}')
-                  .get() as DocumentSnapshot<Map<String, dynamic>>;
+                  .doc('catalog/tracks/items/${doc.id}')
+                  .get();
               if (trackDoc.exists) {
                 tracks.add(TrackModel.fromFirestore(trackDoc).toDomain());
               }

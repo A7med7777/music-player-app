@@ -33,11 +33,11 @@ class PlaybackRepositoryImpl implements PlaybackRepository {
     try {
       final ids = queue ?? [trackId];
       final tracks = await _fetchTracks(ids);
-      if (tracks.isEmpty) return Left(const NotFoundFailure());
+      if (tracks.isEmpty) return const Left(NotFoundFailure());
       await _controller.playTracks(tracks, startIndex: startIndex);
       return const Right(null);
     } catch (_) {
-      return Left(const PlaybackFailure());
+      return const Left(PlaybackFailure());
     }
   }
 
@@ -51,11 +51,11 @@ class PlaybackRepositoryImpl implements PlaybackRepository {
       final doc = await _db
           .doc('users/${_uid()}/playlists/$playlistId')
           .get();
-      if (!doc.exists) return Left(const NotFoundFailure());
+      if (!doc.exists) return const Left(NotFoundFailure());
       final ids = List<String>.from(
         doc.data()?['trackIds'] as List? ?? [],
       );
-      if (ids.isEmpty) return Left(const NotFoundFailure());
+      if (ids.isEmpty) return const Left(NotFoundFailure());
       final tracks = await _fetchTracks(ids);
       await _controller.playTracks(
         tracks,
@@ -64,7 +64,7 @@ class PlaybackRepositoryImpl implements PlaybackRepository {
       );
       return const Right(null);
     } catch (_) {
-      return Left(const PlaybackFailure());
+      return const Left(PlaybackFailure());
     }
   }
 
@@ -76,12 +76,12 @@ class PlaybackRepositoryImpl implements PlaybackRepository {
           .orderBy('likedAt', descending: true)
           .get();
       final ids = snap.docs.map((d) => d.id).toList();
-      if (ids.isEmpty) return Left(const NotFoundFailure());
+      if (ids.isEmpty) return const Left(NotFoundFailure());
       final tracks = await _fetchTracks(ids);
       await _controller.playTracks(tracks, shuffle: shuffle);
       return const Right(null);
     } catch (_) {
-      return Left(const PlaybackFailure());
+      return const Left(PlaybackFailure());
     }
   }
 
@@ -152,7 +152,7 @@ class PlaybackRepositoryImpl implements PlaybackRepository {
         if (doc.exists) {
           results.add(
             TrackModel.fromFirestore(
-              doc as DocumentSnapshot<Map<String, dynamic>>,
+              doc,
             ).toDomain(),
           );
         }

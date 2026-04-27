@@ -9,7 +9,7 @@ class LibraryRemoteDatasource {
   final FirebaseFirestore _db;
 
   Stream<List<TrackModel>> watchTracks({TrackSort sort = TrackSort.title}) {
-    Query<Map<String, dynamic>> q = _db.collection('catalog/tracks');
+    Query<Map<String, dynamic>> q = _db.collection('catalog/tracks/items');
     if (sort == TrackSort.title) q = q.orderBy('title');
     if (sort == TrackSort.artist) q = q.orderBy('artistName');
     return q.snapshots().map(
@@ -25,7 +25,7 @@ class LibraryRemoteDatasource {
   }
 
   Stream<List<AlbumModel>> watchAlbums() => _db
-      .collection('catalog/albums')
+      .collection('catalog/albums/items')
       .orderBy('title')
       .snapshots()
       .map(
@@ -40,7 +40,7 @@ class LibraryRemoteDatasource {
       );
 
   Stream<List<ArtistModel>> watchArtists() => _db
-      .collection('catalog/artists')
+      .collection('catalog/artists/items')
       .orderBy('name')
       .snapshots()
       .map(
@@ -56,7 +56,7 @@ class LibraryRemoteDatasource {
 
   Future<List<TrackModel>> getTracksOfAlbum(String albumId) async {
     final snap = await _db
-        .collection('catalog/tracks')
+        .collection('catalog/tracks/items')
         .where('albumId', isEqualTo: albumId)
         .get();
     return snap.docs
